@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (!found && token != NULL && strlen(token) > 0) {
-          printf("%s: not ~ found\n", token);
+          printf("%s: not found\n", token);
         }
         
         token = strtok(NULL, " ");
