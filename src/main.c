@@ -39,13 +39,14 @@ int main(int argc, char *argv[]) {
           }
         }
 
-        char *fullpath = NULL;
-        search_exec_commands(token, &fullpath);
-        if (fullpath != NULL) {
-          printf("%s is %s\n", token, fullpath);
-          free(fullpath);
-          found = 1;
-          break;
+        if (!found) {
+          char *fullpath = NULL;
+          search_exec_commands(token, &fullpath);
+          if (fullpath != NULL) {
+            printf("%s is %s\n", token, fullpath);
+            free(fullpath);
+            found = 1;
+          }
         }
 
         if (!found && token != NULL && strlen(token) > 0) {
