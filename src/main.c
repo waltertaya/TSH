@@ -40,11 +40,11 @@ int main(int argc, char *argv[]) {
         }
 
         if (!found) {
-          char *fullpath = NULL;
-          search_exec_commands(token, &fullpath);
-          if (fullpath != NULL) {
-            printf("%s is %s\n", token, fullpath);
-            free(fullpath);
+          char *full_path = NULL;
+          search_exec_commands(token, &full_path);
+          if (full_path != NULL) {
+            printf("%s is %s\n", token, full_path);
+            free(full_path);
             found = 1;
           }
         }
@@ -72,20 +72,21 @@ void search_exec_commands(const char *command, char **buf) {
   }
 
   char *path_copy = strdup(path);
-  char *dir = strtok(path_copy, ":");
+  char *saveptr;
+  char *dir = strtok_r(path_copy, ":", &saveptr);
 
   while (dir != NULL) {
     char fullpath[512];
     snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, command);
     
-    if ((access(fullpath, X_OK)) == 0) {
+    if ((access(fullpath, F_OK)) == 0 && access(fullpath, X_OK) == 0) {
       free(path_copy);
       if (buf)
         *buf = strdup(fullpath);
       return;
     }
     
-    dir = strtok(NULL, ":");
+    dir = strtok_r(NULL, ":", &saveptr);
   }
 
   free(path_copy);
