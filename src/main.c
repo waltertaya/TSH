@@ -2,12 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #define MAXLINE 256
 
 char *builtin[] = {"echo", "exit", "type"};
 
 void search_exec_commands(const char *command, char **buf);
 int find_if_executable(const char *input);
+void run_executable(char *command);
+void tokenization(char *string, char **buf);
 
 int main(int argc, char *argv[]) {
   // Flush after every printf
@@ -57,7 +60,8 @@ int main(int argc, char *argv[]) {
         token = strtok(NULL, " ");
       }
     } else if (find_if_executable(command)) { // running external program
-      int ret = system(command);
+      // int ret = system(command);
+      run_executable(command);
     } else {
       printf("%s: command not found\n", command);
     }
@@ -120,4 +124,34 @@ int find_if_executable(const char *input) {
   free(full_path);
   free(command);
   return 0;
+}
+
+void run_executable(char *command) {
+  char *args[64];
+  tokenization(command, args);
+
+  pid_t pid = fork();
+
+  if (pid == 0) {
+    execvp(args[0], args);
+    perror("execvp failed");
+    exit(1);
+  } else if (pid > 0) {
+    waitpid(pid, NULL, 0);
+  } else {
+    perror("fork failed");
+  }
+}
+
+void tokenization(char *string, char *buf[]) {
+  // char *buf[64];
+  int i = 0;
+
+  char *token = strtok(string, " ");
+  while (token != NULL && i < 63) {
+    buf[i++] = token;
+    token = strtok(NULL, " ");
+  }
+
+  buf[i] = NULL;
 }
