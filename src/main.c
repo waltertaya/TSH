@@ -7,6 +7,7 @@
 char *builtin[] = {"echo", "exit", "type"};
 
 void search_exec_commands(const char *command, char **buf);
+int find_if_executable(const char *input);
 
 int main(int argc, char *argv[]) {
   // Flush after every printf
@@ -55,6 +56,8 @@ int main(int argc, char *argv[]) {
         
         token = strtok(NULL, " ");
       }
+    } else if (find_if_executable(command)) { // running external program
+      int ret = system(command);
     } else {
       printf("%s: command not found\n", command);
     }
@@ -92,4 +95,29 @@ void search_exec_commands(const char *command, char **buf) {
   free(path_copy);
   *buf = NULL;
   return;
+}
+
+int find_if_executable(const char *input) {
+  char *command = strdup(input);
+
+  // handle commands with / without arguments
+  size_t space_pos = strcspn(input, " \t");
+  if (space_pos != strlen(input)) {
+    char *space = strchr(command, ' ');
+
+    if (space != NULL)
+      *space = '\0';
+  }
+
+  char *full_path = NULL;
+  search_exec_commands(command, &full_path);
+  if (full_path != NULL) {
+    free(full_path);
+    free(command);
+    return 1;
+  }
+
+  free(full_path);
+  free(command);
+  return 0;
 }
