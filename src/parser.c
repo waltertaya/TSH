@@ -10,17 +10,37 @@ char **parse_input(char *input) {
     char *p = input;
     char token[512];
 
+    int single_qoute = 0;
     while (*p != '\0') {
-        if (*p == ' ') {
+        if (*p == '\'') {
+            if (*(p+1) != '\0' && *(p+1) == '\'') {
+                *p +=2;
+                continue;
+            }
+            single_qoute = !single_qoute;
+            *p++;
+            continue;
+        }
+
+        if (single_qoute) {
+            token[i++] = *p;
+        } else if (*p == ' ') {
+            if (i == 0) {
+                p++;
+                continue;
+            }
             token[i] = '\0';
 
             if (size + 1 >= capacity) {
                 capacity *= 2;
-                argv = realloc(argv, capacity * sizeof(char *));
-            }
+                char **temp = realloc(argv, capacity * sizeof(char *));
 
-            if (argv == NULL)
-                return NULL;
+
+                if (temp == NULL)
+                    return NULL;
+
+                argv = temp;
+            }
             
             argv[size] = malloc(strlen(token) + 1);
             strcpy(argv[size], token);
