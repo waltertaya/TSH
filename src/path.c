@@ -9,11 +9,14 @@ char *find_executable(const char *command) {
     
     char *path_copy = strdup(path);
     char *saveptr;
+
     char *dir = strtok_r(path_copy, ":", &saveptr);
-    char *fullpath = malloc(256 * sizeof(char));
+
+    size_t fullpath_size = 256;
+    char *fullpath = malloc(fullpath_size);
 
     while (dir != NULL) {
-        snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, command);
+        snprintf(fullpath, fullpath_size, "%s/%s", dir, command);
 
         if ((access(fullpath, F_OK)) == 0 && access(fullpath, X_OK) == 0) {
             free(path_copy);
