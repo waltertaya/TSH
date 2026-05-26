@@ -19,10 +19,10 @@ int is_external(const char *cmd) {
 void run_external(char **argv) {
     pid_t pid = fork();
 
-    char **args = argv;
+    // char **args = argv; // bug
 
     if (pid == 0) {
-        execvp(args[0], args+1);
+        execvp(argv[0], argv);
         perror("execvp failed");
         exit(1);
     } else if (pid > 0) {
