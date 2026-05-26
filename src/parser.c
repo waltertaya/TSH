@@ -14,7 +14,7 @@ char **parse_input(char *input) {
     while (*p != '\0') {
         if (*p == '\'') {
             if (*(p+1) != '\0' && *(p+1) == '\'') {
-                *p +=2;
+                p +=2;
                 continue;
             }
             single_qoute = !single_qoute;
