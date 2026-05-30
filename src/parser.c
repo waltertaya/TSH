@@ -11,8 +11,19 @@ char **parse_input(char *input) {
     char token[512];
 
     int single_qoute = 0;
+    int double_qoute = 0;
     while (*p != '\0') {
-        if (*p == '\'') {
+        if (*p == '"' && single_qoute == 0) {
+            if (*(p+1) != '\0' && *(p+1) == '"') {
+                p += 2;
+                continue;
+            }
+            double_qoute = !double_qoute;
+            *p++;
+            continue;
+        }
+
+        if (*p == '\'' && double_qoute == 0) {
             if (*(p+1) != '\0' && *(p+1) == '\'') {
                 p +=2;
                 continue;
@@ -22,7 +33,7 @@ char **parse_input(char *input) {
             continue;
         }
 
-        if (single_qoute) {
+        if (single_qoute || double_qoute) {
             token[i++] = *p;
         } else if (*p == ' ') {
             if (i == 0) {
